@@ -18,7 +18,7 @@ jobs:
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
         run: |
           python -c '
-          import smtplib, time
+          import smtplib, time, uuid
           from email.mime.text import MIMEText
           from email.header import Header
           import os
@@ -45,7 +45,7 @@ jobs:
               ("AI và Điện toán biên (Edge AI)", "Triển khai các mô hình AI trực tiếp trên thiết bị di động và IoT giúp giảm độ trễ xử lý."),
               ("Phát hiện gian lận ngân hàng bằng thuật toán AI", "Hệ thống tự động phát hiện các giao dịch bất thường dựa trên hành vi người dùng."),
               ("AI trong phát triển phần mềm (AI Coding Assistant)", "Các công cụ sinh mã nguồn tự động giúp lập trình viên tăng năng suất viết code."),
-              ("Tương lai của Robotics kết hợp AI", "Robot thông minh có khả năng tương tác với môi trường thực tế và học hỏi hành vi con người."),
+              ("Tương lai của Robotics kết hợp AI", "Robot thông minh có khả năng tương tác với môi trường thực tế và học học hành vi con người."),
               ("Tạo mẫu nhanh sản phẩm với Generative Design", "AI đề xuất các phương án thiết kế tối ưu cấu trúc và vật liệu cho ngành cơ khí."),
               ("Phân tích dự báo thời tiết bằng học máy", "Mô hình dự báo khí tượng sử dụng AI mang lại độ chính xác cao trong thời gian ngắn."),
               ("AI trong ngành bán lẻ: Trải nghiệm mua sắm thông minh", "Hệ thống gợi ý sản phẩm cá nhân hóa dựa trên lịch sử xem và thói quen tiêu dùng."),
@@ -71,4 +71,16 @@ jobs:
           server.login(username, password)
 
           for idx, (title, content) in enumerate(ai_topics, 1):
-              msg = MIMEText(f"Chào bạn,\n\nĐây là thông báo số {idx}/38 về chủ đề Trí tuệ nhân tạo:\n\n{content}\n\nTrân trọng,\nHệ thống AI Notification", "plain", "utf-8")
+              unique_id = str(uuid.uuid4())[:5]
+              
+              msg = MIMEText(f"Chào bạn,\n\nĐây là thông báo số {idx}/38 về chủ đề Trí tuệ nhân tạo:\n\n{content}\n\n[Mã tham chiếu: {unique_id}]\n\nTrân trọng,\nHệ thống AI Notification", "plain", "utf-8")
+              msg["Subject"] = Header(f"[{idx}/38] AI Report: {title}", "utf-8")
+              msg["From"] = username
+              msg["To"] = username
+
+              server.sendmail(username, [username], msg.as_string())
+              print(f"Đã gửi email {idx}/38: [{idx}/38] AI Report: {title}")
+              time.sleep(1)
+
+          server.quit()
+          '
