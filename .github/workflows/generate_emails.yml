@@ -1,0 +1,21 @@
+name: Generate Email Notifications
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create 38 issues to trigger email notifications
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for i in $(seq 1 38); do
+            gh issue create --title "Thông báo tự động #$i" --body "Kiểm tra email gửi từ GitHub."
+          done
