@@ -1,23 +1,74 @@
-name: Generate Email Notifications
+name: Send 38 Unique AI Emails
 
 on:
   workflow_dispatch:
 
 jobs:
-  trigger-emails:
+  send-ai-emails:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
-      - name: Create 38 Releases to force email notifications
-        run: |
-          for i in $(seq 1 38); do
-            TIMESTAMP=$(date +%s%N)
-            gh release create "v1.0.$i-$TIMESTAMP" --title "Thông báo mới #$i" --notes "Nội dung kiểm tra thông báo email."
-            sleep 1
-          done
+      - name: Send 38 Unique AI Emails
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+        run: |
+          python -c '
+          import smtplib, time
+          from email.mime.text import MIMEText
+          from email.header import Header
+          import os
+
+          username = os.environ["MAIL_USERNAME"]
+          password = os.environ["MAIL_PASSWORD"]
+
+          ai_topics = [
+              ("Xu hướng Generative AI trong năm 2026", "Generative AI đang chuyển dịch mạnh mẽ từ tạo văn bản sang mô phỏng đa phương thức và tự động hóa quy trình nghiệp vụ."),
+              ("Ứng dụng LLM trong phân tích dữ liệu doanh nghiệp", "Các mô hình ngôn ngữ lớn giúp doanh nghiệp truy vấn dữ liệu SQL bằng ngôn ngữ tự nhiên một cách nhanh chóng."),
+              ("Trí tuệ nhân tạo trong y tế và chẩn đoán hình ảnh", "AI hỗ trợ bác sĩ phát hiện sớm các tổn thương qua ảnh X-quang và MRI với độ chính xác cao."),
+              ("Đạo đức AI: Thách thức về bản quyền và dữ liệu", "Việc sử dụng dữ liệu huấn luyện AI đang đặt ra nhiều câu hỏi pháp lý về bản quyền sáng tác."),
+              ("AI Agent: Tương lai của tự động hóa công việc", "Các AI Agent tự chủ có khả năng lập kế hoạch, sử dụng công cụ và hoàn thành bài toán phức tạp."),
+              ("Học sâu (Deep Learning) và Mạng Nơ-ron Nhân tạo", "Kiến trúc Transformer tiếp tục là nền tảng cốt lõi cho các bước tiến đột phá trong xử lý ngôn ngữ."),
+              ("Xử lý ngôn ngữ tự nhiên (NLP) cho tiếng Việt", "Các mô hình ngôn ngữ tối ưu riêng cho tiếng Việt ngày càng hiểu sâu ngữ cảnh và sắc thái biểu cảm."),
+              ("AI trong thị trường tài chính và giao dịch tự động", "Hệ thống AI phân tích biểu đồ và tin tức theo thời gian thực để đưa ra dự báo xu hướng thị trường."),
+              ("Tối ưu hóa chuỗi cung ứng bằng Machine Learning", "Dự báo nhu cầu hàng hóa và lộ trình vận chuyển thông minh giúp giảm chi phí kho vận."),
+              ("Thách thức bảo mật khi triển khai AI", "Nguy cơ Prompt Injection và rò rỉ dữ liệu nhạy cảm qua các mô hình AI đang được quan tâm hàng đầu."),
+              ("Computer Vision trong xe tự lái", "Hệ thống nhận diện vật thể và phân tích làn đường giúp nâng cao độ an toàn cho phương tiện tự hành."),
+              ("AI trong giáo dục: Cá nhân hóa lộ trình học tập", "Mỗi học sinh có thể sở hữu một trợ lý học tập AI riêng, điều chỉnh bài giảng theo tốc độ học."),
+              ("Phân tích cảm xúc khách hàng qua cuộc gọi AI", "AI xử lý giọng nói giúp đánh giá mức độ hài lòng của khách hàng trong các trung tâm chăm sóc."),
+              ("Ứng dụng AI trong sáng tạo nghệ thuật và âm nhạc", "Công cụ AI hỗ trợ nghệ sĩ phát triển ý tưởng đồ họa và sáng tác giai điệu tự động."),
+              ("Kỹ thuật Prompt Engineering nâng cao", "Cách thiết kế câu lệnh hiệu quả giúp mô hình AI trả lời chính xác và đúng cấu trúc yêu cầu."),
+              ("AI và Điện toán biên (Edge AI)", "Triển khai các mô hình AI trực tiếp trên thiết bị di động và IoT giúp giảm độ trễ xử lý."),
+              ("Phát hiện gian lận ngân hàng bằng thuật toán AI", "Hệ thống tự động phát hiện các giao dịch bất thường dựa trên hành vi người dùng."),
+              ("AI trong phát triển phần mềm (AI Coding Assistant)", "Các công cụ sinh mã nguồn tự động giúp lập trình viên tăng năng suất viết code."),
+              ("Tương lai của Robotics kết hợp AI", "Robot thông minh có khả năng tương tác với môi trường thực tế và học hỏi hành vi con người."),
+              ("Tạo mẫu nhanh sản phẩm với Generative Design", "AI đề xuất các phương án thiết kế tối ưu cấu trúc và vật liệu cho ngành cơ khí."),
+              ("Phân tích dự báo thời tiết bằng học máy", "Mô hình dự báo khí tượng sử dụng AI mang lại độ chính xác cao trong thời gian ngắn."),
+              ("AI trong ngành bán lẻ: Trải nghiệm mua sắm thông minh", "Hệ thống gợi ý sản phẩm cá nhân hóa dựa trên lịch sử xem và thói quen tiêu dùng."),
+              ("Kiểm soát chất lượng sản xuất tự động", "Camera AI kiểm tra và phát hiện lỗi sản phẩm trên dây chuyền sản xuất với tốc độ cao."),
+              ("AI và Năng lượng sạch: Tối ưu hóa lưới điện", "Dự báo nhu cầu tiêu thụ năng lượng giúp điều tiết nguồn điện năng lượng mặt trời hiệu quả."),
+              ("Mô hình AI đa phương thức (Multimodal AI)", "Khả năng xử lý đồng thời văn bản, hình ảnh, âm thanh và video trong cùng một mô hình."),
+              ("Giải pháp AI bảo vệ môi trường", "Theo dõi diện tích rừng và biến đổi khí hậu thông qua phân tích ảnh vệ tinh bằng AI."),
+              ("Đào tạo lại nhân lực trong thời đại AI", "Kỹ năng làm việc cùng AI trở thành một trong những tiêu chuẩn quan trọng cho người lao động."),
+              ("Tự động hóa báo cáo tài chính bằng AI", "Trích xuất dữ liệu hóa đơn, chứng từ tự động giúp giảm bớt công việc thủ công."),
+              ("Khả năng giải thích của AI (Explainable AI - XAI)", "Xây dựng các mô hình AI minh bạch, giúp con người hiểu được lý do đưa ra quyết định."),
+              ("Phát triển thuốc mới nhờ trí tuệ nhân tạo", "AI rút ngắn thời gian phân tích cấu trúc phân tử và dự đoán tương tác thuốc."),
+              ("Ứng dụng AI trong bảo tồn di sản văn hóa", "Phục hồi hình ảnh, tài liệu cổ và dựng lại không gian 3D bằng công nghệ AI."),
+              ("Chiến lược hạ tầng đám mây cho mô hình AI", "Quản lý và vận hành cụm GPU hiệu quả để phục vụ huấn luyện các mô hình lớn."),
+              ("AI trong dịch thuật và xóa bỏ rào cản ngôn ngữ", "Dịch thuật trực tiếp đa ngôn ngữ với độ tự nhiên tiệm cận người bản xứ."),
+              ("Hệ thống khuyến nghị (Recommendation Systems)", "Thuật toán gợi ý nội dung trên các nền tảng mạng xã hội và dịch vụ xem video."),
+              ("AI và an ninh mạng: Phòng thủ chủ động", "Phát hiện mối đe dọa mạng và các cuộc tấn công chưa từng xuất hiện (Zero-day)."),
+              ("Ứng dụng AI trong nông nghiệp thông minh", "Giám sát sức khỏe cây trồng và điều khiển hệ thống tưới tiêu tự động."),
+              ("Tự động hóa quy trình nghiệp vụ (RPA) tích hợp AI", "Nâng cấp các robot phần mềm truyền thống bằng khả năng đọc hiểu tài liệu thông minh."),
+              ("Tổng quan về kỷ nguyên Trí tuệ nhân tạo 2026", "Sự kết hợp giữa AI, điện toán đám mây và dữ liệu lớn đang định hình lại tương lai.")
+          ]
+
+          server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+          server.login(username, password)
+
+          for idx, (title, content) in enumerate(ai_topics, 1):
+              msg = MIMEText(f"Chào bạn,\n\nĐây là thông báo số {idx}/38 về chủ đề Trí tuệ nhân tạo:\n\n{content}\n\nTrân trọng,\nHệ thống AI Notification", "plain", "utf-8")
