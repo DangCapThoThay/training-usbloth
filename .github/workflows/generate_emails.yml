@@ -4,18 +4,20 @@ on:
   workflow_dispatch:
 
 jobs:
-  create-issues:
+  trigger-emails:
     runs-on: ubuntu-latest
     permissions:
-      issues: write
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Create 38 issues to trigger email notifications
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create 38 Releases to force email notifications
         run: |
           for i in $(seq 1 38); do
-            gh issue create --title "Thông báo tự động #$i" --body "Kiểm tra email gửi từ GitHub."
+            TIMESTAMP=$(date +%s%N)
+            gh release create "v1.0.$i-$TIMESTAMP" --title "Thông báo mới #$i" --notes "Nội dung kiểm tra thông báo email."
+            sleep 1
           done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
